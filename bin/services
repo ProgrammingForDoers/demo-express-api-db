@@ -1,0 +1,103 @@
+#!/bin/bash
+
+scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $scriptDir/utilities
+
+main() {
+  if [[ -z $1 ]]; then
+    printMsg "Must specify a command: $1"
+    help
+    return
+  fi
+
+  case "$1" in
+    u | up)
+      up $2
+      ;;
+    d | down)
+      down $2
+      ;;
+    l | logs)
+      logs $2
+      ;;
+    -h | --help)
+      help
+      ;;
+    *)
+      printMsg "Invalid service collection: $1"
+      help
+      ;;
+  esac
+}
+
+up() {
+  local label='all'
+  up-msg $label $1
+  docker-compose up $1
+}
+
+down() {
+  local label='all'
+  down-msg $label
+  docker-compose down
+}
+
+logs() {
+  if [[ -z $1 ]]; then
+    printMsg "Tailing logs for all services... [Ctrl+C to cancel]"
+    docker-compose logs -f
+  else
+    printMsg "Tailing logs for $1 service... [Ctrl+C to cancel]"
+    docker-compose logs -f $1
+  fi
+}
+
+help() {
+  cat <<TEXT
+
+    SYNOPSIS
+      services [command] [-d]
+
+    OPTIONS
+      -d
+        Detached mode: Run containers in the background
+
+    COMMANDS
+      u, up
+        Brings up all containers
+      d, down
+        Brings down all containers
+      l, logs [service-name]
+        Tail logs
+
+    EXAMPLES
+      bin/services up
+        Brings all service containers up
+      bin/services up -d
+        Brings all service containers up in detached mode
+      bin/services down
+        Brings all service containers down
+      bin/services logs
+        Tails logs for all containers
+      bin/services logs web
+        Tails logs for the web container (service names defined in compose file)
+
+TEXT
+}
+
+up-msg() {
+  local insertion=""
+  if [[ $2 == '-d' ]]; then
+    insertion=" in detached mode"
+  fi
+
+  printMsg "Starting up $1 services$insertion..."
+}
+
+down-msg() {
+  printMsg "Bringing down $1 services..."
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  main "$@"
+fi

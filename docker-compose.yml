@@ -1,0 +1,37 @@
+version: "3.9"
+
+networks:
+  default:
+    name: ${COMPOSE_PROJECT_NAME}
+
+services:
+  web:
+    image: node:18.15.0
+    user: node
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=development
+    ports:
+      - 3000:3000
+    volumes:
+      - ./:/home/node/app
+    extra_hosts: # For Linux
+      - host.docker.internal:host-gateway
+    tty: true
+    restart: on-failure
+    depends_on:
+      - db
+    expose:
+      - 3000
+    command: "npm run dev"
+
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: super
+    # Uncomment this if you want the DB to stop erasing data when bringing the stack down
+    # volumes:
+    #   - db:/var/lib/mysql
