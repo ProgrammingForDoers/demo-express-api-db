@@ -1,4 +1,3 @@
-// var mysql = require('mysql2')
 var mysql = require("mysql2/promise")
 var express = require("express")
 var app = express()
@@ -8,15 +7,7 @@ app.use(express.static("public"))
 
 app.use(express.json())
 
-// var connection = mysql.createConnection({
-//   host: 'db', // This is the service name defined in the docker-compose file
-//   user: 'root',
-//   password: 'super'
-// })
-
 let dbConnection // This is initialized when the server starts
-
-var users = []
 
 app.get("/users", async function(request, response) {
   var results = await dbConnection.execute(`
@@ -62,6 +53,7 @@ app.post("/users", async function(request, response) {
     weight: providedWeight,
   }
 
+  console.log(newUser)
   response.json(newUser)
 })
 
@@ -93,6 +85,7 @@ app.put("/users/:id", async function(request, response) {
     weight: providedWeight,
   }
 
+  console.log(user)
   response.json(user)
 })
 
@@ -105,7 +98,9 @@ app.delete("/users/:id", async function(request, response) {
   `;
   await dbConnection.execute(sql, [id]);
 
-  response.json({ msg: 'Deleted user' })
+  message = { msg: "Deleted user" }
+  console.log(message)
+  response.json(message)
 })
 
 mysql.createConnection(configuration)
