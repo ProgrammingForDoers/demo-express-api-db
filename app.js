@@ -1,7 +1,8 @@
 var mysql = require("mysql2/promise")
 var express = require("express")
-var app = express()
 var configuration = require("./configuration")
+
+var app = express()
 
 app.use(express.static("public"))
 
@@ -33,37 +34,34 @@ app.get("/users/:id", async function(request, response) {
 })
 
 app.post("/users", async function(request, response) {
-  var providedFirstName = request.body["firstName"]
-  var providedLastName = request.body["lastName"]
-  var providedAge = request.body["age"]
-  var providedWeight = request.body["weight"]
+  var newUser = {
+    firstName: request.body["firstName"],
+    lastName: request.body["lastName"],
+    age: request.body["age"],
+    weight: request.body["weight"]
+  }
+  console.log(newUser)
 
   var sql = `
     INSERT INTO users (first_name, last_name, age, weight)
     VALUES (?, ?, ?, ?)
   `
-  var values = [providedFirstName, providedLastName, providedAge, providedWeight]
+  var values = [newUser["firstName"], newUser["lastName"], newUser["age"], newUser["weight"]]
 
   await dbConnection.execute(sql, values)
 
-  var newUser = {
-    firstName: providedFirstName,
-    lastName: providedLastName,
-    age: providedAge,
-    weight: providedWeight,
-  }
-
-  console.log(newUser)
   response.json(newUser)
 })
 
 app.put("/users/:id", async function(request, response) {
-  var id = request.params.id
-
-  var providedFirstName = request.body["firstName"]
-  var providedLastName = request.body["lastName"]
-  var providedAge = request.body["age"]
-  var providedWeight = request.body["weight"]
+  var user = {
+    id: request.params.id,
+    firstName: request.body["firstName"],
+    lastName: request.body["lastName"],
+    age: request.body["age"],
+    weight: request.body["weight"]
+  }
+  console.log(user)
 
   var sql = `
     UPDATE users
@@ -73,19 +71,10 @@ app.put("/users/:id", async function(request, response) {
         weight = ?
     WHERE id = ?
   `
-  var values = [providedFirstName, providedLastName, providedAge, providedWeight, id]
+  var values = [user["firstName"], user["lastName"], user["age"], user["weight"], user["id"]]
 
   await dbConnection.execute(sql, values)
 
-  var user = {
-    id: id,
-    firstName: providedFirstName,
-    lastName: providedLastName,
-    age: providedAge,
-    weight: providedWeight,
-  }
-
-  console.log(user)
   response.json(user)
 })
 
@@ -106,11 +95,11 @@ app.delete("/users/:id", async function(request, response) {
 mysql.createConnection(configuration)
   .then(function(createdConnection) {
     dbConnection = createdConnection // This makes it globally available
-    console.log("Connected to the database")
+    console.log("[Connected to the database]")
 
     // Start the server after connecting to the database
     app.listen(3000, function() {
-      console.log("App is listening on port 3000")
+      console.log("> Server listening on http://localhost:3000")
     })
   })
 

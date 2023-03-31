@@ -4,20 +4,20 @@ scriptDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $scriptDir/utilities
 
 main() {
-  printMsg "\n-- Downloading & Installing NodeJS Image..."
+  printMsg "-- Downloading & Installing NodeJS Image..."
   docker-compose up -d
 
-  printMsg "\n-- Installing NPM Dependencies..."
+  printMsg "-- Installing NPM Dependencies..."
   docker-compose run --rm web npm install
 
-  printMsg "\n-- Bringing Up Database..."
+  printMsg "-- Bringing Up Database..."
   docker-compose down; docker-compose up -d db
 
-  printMsg "\n-- Waiting 15 Seconds..."
-  printMsg "\n(The database setup is coming next. Disregard warnings/errors, they probably don't matter)"
+  printMsg "-- Waiting 15 Seconds..."
+  printMsg "(The database setup is coming next. Disregard warnings/errors, they probably don't matter)"
   sleep 15
 
-  printMsg "\n-- Database..."
+  printMsg "-- Database..."
   docker-compose run --rm web npm run dbSetup
 
   # printMsg "\n-- Dropping Database..."
@@ -26,14 +26,14 @@ main() {
   # printMsg "\n-- Creating Database..."
   # docker-compose exec db mysql -u root -psuper -e "CREATE DATABASE my_app"
 
-  printMsg "\n-- Bringing Up Rest of Stack..."
+  printMsg "-- Bringing Up Rest of Stack..."
   docker-compose up -d
 }
 
 printMsg() {
   local RED='\033[0;31m'
   local CLEAR='\033[0m'
-  echo -e "${RED}$1${CLEAR}"
+  echo -e "\n${RED}$1${CLEAR}"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then

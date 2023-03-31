@@ -32,8 +32,14 @@ main() {
 
 up() {
   local label='all'
-  up-msg $label $1
-  docker-compose up $1
+  printMsg "-- Starting up DB service in detached mode..."
+  docker-compose up -d db
+
+  printMsg "-- Waiting 15 seconds for DB startup..."
+  sleep 15
+
+  printMsg "-- Starting up web service in detached mode..."
+  docker-compose up -d web
 }
 
 down() {

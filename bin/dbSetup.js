@@ -1,6 +1,6 @@
-var mysql = require('mysql2/promise')
+var mysql = require("mysql2/promise")
 var configuration = require("../configuration")
-configuration.database = null;
+configuration.database = null
 
 var sql = [
   "CREATE DATABASE my_app",
